@@ -1,5 +1,14 @@
 {
+  "scripts": {
+    "build": "tsc",
+    "watch-ts": "tsc -w",
+    "serve": "nodemon dist/app.js",
+    "start": "run-p watch-ts serve"
+  },
   "dependencies": {
-    "koa": "^2.4.1"
+    "@types/koa": "^2.0.41",
+    "koa": "^2.4.1",
+    "nodemon": "^1.12.1",
+    "npm-run-all": "^4.1.2"
   }
 }
