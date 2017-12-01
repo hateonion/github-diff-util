@@ -1,14 +1,17 @@
 {
   "scripts": {
-    "build": "tsc",
-    "watch-ts": "tsc -w",
-    "serve": "nodemon dist/app.js",
-    "start": "run-p watch-ts serve"
+    "start": "nodemon index.js"
   },
   "dependencies": {
-    "@types/koa": "^2.0.41",
     "koa": "^2.4.1",
     "nodemon": "^1.12.1",
-    "npm-run-all": "^4.1.2"
+    "npm-run-all": "^4.1.2",
+    "r2": "^2.0.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-register": "^6.26.0",
+    "koa-router": "^7.3.0"
   }
 }
