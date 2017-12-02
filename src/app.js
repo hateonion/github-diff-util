@@ -1,29 +1,40 @@
 import koa from 'koa';
 import Router from 'koa-router';
+import bodyParser from 'koa-bodyparser';
+import session from 'koa-session';
 import r2 from 'r2'
 
 const app = new koa();
 const router = new Router();
 
-app.use(async (ctx, next) => {
-  const start = Date.now();
-  await next()
-  const end = Date.now();
-  const ms = end - start;
-  ctx.set('X-Response-Time', `${ms}-ms`);
+router.get('/test',async (ctx, next) => {
+    await next();
+    ctx.body = ctx.state.repos;
 });
+const user = config.userInfo
 
-app.use(async (ctx, next) => {
-  const start = Date.now();
-  await next()
-  const end = Date.now();
-  const ms = end - start;
-  console.log(`${ms}-ms`);
-});
+const parseRequestData = (ctx, next) => {
+    const data = ctx.request.body;
+    ctx.state.authData = data;
+}
 
+const formatRequestData = async (ctx, next) => {
+    const url = `testUrl`;
+    console.count(url);
+    ctx.state.requestUrl= url;
+}
+
+const getRepoDetails = async (ctx, next) => {
+    await next();
+    const url = ctx.state.requestUrl;
+    ctx.state.repos = await r2.get(url).json;
+}
+
+app.use(session(app));
+app.use(bodyParser());
 app.use(router.routes());
 app.use(router.allowedMethods());
+app.use(getRepoDetails);
+app.use(formatRequestData);
 
-app.use(async (ctx) => ctx.body = 'hello world');
-
-app.listen(3000);
+app.listen(3001);
