@@ -2,26 +2,25 @@ import koa from 'koa';
 import Router from 'koa-router';
 import bodyParser from 'koa-bodyparser';
 import session from 'koa-session';
+import config from '../user.config.json';
 import r2 from 'r2'
 
 const app = new koa();
 const router = new Router();
-
-router.get('/test',async (ctx, next) => {
-    await next();
-    ctx.body = ctx.state.repos;
-});
-const user = config.userInfo
 
 const parseRequestData = (ctx, next) => {
     const data = ctx.request.body;
     ctx.state.authData = data;
 }
 
+router.get('/test',async (ctx, next) => {
+    await next();
+    ctx.body = ctx.state.repos;
+});
+
 const formatRequestData = async (ctx, next) => {
-    const url = `testUrl`;
-    console.count(url);
-    ctx.state.requestUrl= url;
+    const requestUrl = `https://${config.user}:${config.token}@api.github.com/orgs/${config.org}`
+    ctx.state.requestUrl= requestUrl;
 }
 
 const getRepoDetails = async (ctx, next) => {
