@@ -1,2 +1,2 @@
 # zen
-Zen is a node.js based github diff tool backend
+Zen is a node.js based blog backend

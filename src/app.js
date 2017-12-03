@@ -2,38 +2,31 @@ import koa from 'koa';
 import Router from 'koa-router';
 import bodyParser from 'koa-bodyparser';
 import session from 'koa-session';
-import config from '../user.config.json';
-import r2 from 'r2'
+import mongoose from 'mongoose';
 
 const app = new koa();
 const router = new Router();
 
-const parseRequestData = (ctx, next) => {
-    const data = ctx.request.body;
-    ctx.state.authData = data;
-}
-
-router.get('/test',async (ctx, next) => {
-    await next();
-    ctx.body = ctx.state.repos;
+router.post('/create', async (ctx, next) => {
+  const data = ctx.request.body;
+  mongoose.connect('mongodb://localhost:33333/testdb');
+  const db = mongoose.connection;
+  db.on('error', console.warn('connection error'));
+  db.once('open', () => {
+    const testSchema = mongoose.Schema({
+      name: string
+    });
+    const test = mongoose.model('test', testSchema);
+    const testInstance = new test({name: data.name});
+    testInstance.save((err, testInstance) => {
+      if(err) {
+        console.error('warning!');
+      }
+    });
+  });
 });
 
-const formatRequestData = async (ctx, next) => {
-    const requestUrl = `https://${config.user}:${config.token}@api.github.com/orgs/${config.org}`
-    ctx.state.requestUrl= requestUrl;
-}
-
-const getRepoDetails = async (ctx, next) => {
-    await next();
-    const url = ctx.state.requestUrl;
-    ctx.state.repos = await r2.get(url).json;
-}
-
-app.use(session(app));
 app.use(bodyParser());
 app.use(router.routes());
 app.use(router.allowedMethods());
-app.use(getRepoDetails);
-app.use(formatRequestData);
-
 app.listen(3001);
